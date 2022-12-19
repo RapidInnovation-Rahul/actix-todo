@@ -8,13 +8,17 @@ use utoipa::ToSchema;
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct Todo{
-    _id : Option<ObjectId>,
+    #[schema(example = "639f063c2ff253e1161e063b", value_type=String, read_only)]
+    pub _id : Option<ObjectId>,
+    #[schema(example = "task")]
     pub task : String,
+    #[schema(example = false, read_only)]
     pub done : bool,
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct TaskName{
+    #[schema(example = "task")]
     pub name : String,
 }
 
@@ -39,9 +43,7 @@ pub fn configure(client: web::Data<Client>) -> impl FnOnce(&mut web::ServiceConf
     responses(
         (status = 200, description = "Successfully Created new task", body = Todo),
     ),
-    params(
-        ("info" = TaskName, description = "create new task"),
-    )
+    request_body = TaskName,
 )]
 
 pub async fn create(client: web::Data<Client>, info : web::Json<TaskName>)-> HttpResponse{
